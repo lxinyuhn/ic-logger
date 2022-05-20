@@ -9,24 +9,13 @@ import Option "mo:base/Option";
 
 import Logger "mo:ic-logger/Logger";
 
-shared(msg) actor class TextLogger() {
-  let OWNER = msg.caller;
+actor class TextLogger() {
 
   stable var state : Logger.State<Text> = Logger.new<Text>(0, null);
   let logger = Logger.Logger<Text>(state);
 
-  // Principals that are allowed to log messages.
-  stable var allowed : [Principal] = [OWNER];
-
-  // Set allowed principals.
-  public shared (msg) func allow(ids: [Principal]) {
-    assert(msg.caller == OWNER);
-    allowed := ids;
-  };
-
   // Add a set of messages to the log.
-  public shared (msg) func append(msgs: [Text]) {
-    assert(Option.isSome(Array.find(allowed, func (id: Principal) : Bool { msg.caller == id })));
+  public func append(msgs: [Text]) :async() {
     logger.append(msgs);
   };
 
@@ -38,14 +27,8 @@ shared(msg) actor class TextLogger() {
   };
 
   // Return the messages between from and to indice (inclusive).
-  public shared query (msg) func view(from: Nat, to: Nat) : async Logger.View<Text> {
-    assert(msg.caller == OWNER);
+  public shared func view(from: Nat, to: Nat) : async Logger.View<Text> {
     logger.view(from, to)
   };
 
-  // Drop past buckets (oldest first).
-  public shared (msg) func pop_buckets(num: Nat) {
-    assert(msg.caller == OWNER);
-    logger.pop_buckets(num)
-  }
 }

@@ -99,3 +99,10 @@ make
 [dfx]: https://github.com/dfinity/sdk
 [nix]: https://github.com/NixOS/nix
 [tipjar]: https://github.com/ninegua/tipjar
+
+
+```bash
+$(dfx cache show)/moc $(vessel sources) -r TextLoggers
+dfx canister --wallet=$(dfx identity get-wallet) call logger append '(vec{"1 log"})'
+dfx canister --wallet=$(dfx identity get-wallet) call logger view '(0, 0)'
+```
